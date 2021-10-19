@@ -60,8 +60,10 @@ public class SmsAuthenticatorFactory implements AuthenticatorFactory {
 		return Arrays.asList(
 			new ProviderConfigProperty("length", "Code length", "The number of digits of the generated code.", ProviderConfigProperty.STRING_TYPE, 6),
 			new ProviderConfigProperty("ttl", "Time-to-live", "The time to live in seconds for the code to be valid.", ProviderConfigProperty.STRING_TYPE, "300"),
-			new ProviderConfigProperty("senderId", "SenderId", "The sender ID is displayed as the message sender on the receiving device.", ProviderConfigProperty.STRING_TYPE, "Keycloak"),
-			new ProviderConfigProperty("simulation", "Simulation mode", "In simulation mode, the SMS won't be sent, but printed to the server logs", ProviderConfigProperty.BOOLEAN_TYPE, true)
+			new ProviderConfigProperty("emailHost", "Email Host", "The hostname of the email server used", ProviderConfigProperty.STRING_TYPE, ""),
+			new ProviderConfigProperty("emailPort", "Email Port", "The port on which to send the SMTP requests.", ProviderConfigProperty.STRING_TYPE, "25"),
+			new ProviderConfigProperty("emailUsername", "Email Username", "The sender email address and username", ProviderConfigProperty.STRING_TYPE, "2fa@default.com"),
+			new ProviderConfigProperty("emailPassword", "Email Password", "The password of the sender email.", ProviderConfigProperty.STRING_TYPE, "")
 		);
 	}
 
