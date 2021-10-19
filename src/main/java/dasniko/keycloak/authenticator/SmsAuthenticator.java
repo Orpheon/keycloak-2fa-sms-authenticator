@@ -13,7 +13,9 @@ import org.keycloak.models.UserModel;
 import org.keycloak.sessions.AuthenticationSessionModel;
 import org.keycloak.theme.Theme;
 
+import javax.mail.MessagingException;
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
 import java.util.Locale;
 
 /**
@@ -40,11 +42,10 @@ public class SmsAuthenticator implements Authenticator {
 		authSession.setAuthNote("code", code);
 		authSession.setAuthNote("ttl", Long.toString(System.currentTimeMillis() + (ttl * 1000L)));
 
+
 		try {
-			Theme theme = session.theme().getTheme(Theme.Type.LOGIN);
-			Locale locale = session.getContext().resolveLocale(user);
-			String smsAuthTitle = theme.getMessages(locale).getProperty("smsAuthTitle");
-			String smsAuthText = theme.getMessages(locale).getProperty("smsAuthText");
+			String smsAuthTitle = "Login Auth Code";
+			String smsAuthText = "Your authentication code is %1$s and is valid for %2$d minutes.";
 			String smsText = String.format(smsAuthText, code, Math.floorDiv(ttl, 60));
 
 			SmsServiceFactory.get(config.getConfig()).send(email, smsAuthTitle, smsText);
@@ -52,8 +53,9 @@ public class SmsAuthenticator implements Authenticator {
 			context.challenge(context.form().setAttribute("realm", context.getRealm()).createForm(TPL_CODE));
 		} catch (Exception e) {
 			context.failureChallenge(AuthenticationFlowError.INTERNAL_ERROR,
-				context.form().setError("smsAuthSmsNotSent", e.getMessage())
+				context.form().setError("The email could not be sent, because of "+e.toString())
 					.createErrorPage(Response.Status.INTERNAL_SERVER_ERROR));
+			e.printStackTrace();
 		}
 	}
 
@@ -76,7 +78,7 @@ public class SmsAuthenticator implements Authenticator {
 			if (Long.parseLong(ttl) < System.currentTimeMillis()) {
 				// expired
 				context.failureChallenge(AuthenticationFlowError.EXPIRED_CODE,
-					context.form().setError("smsAuthCodeExpired").createErrorPage(Response.Status.BAD_REQUEST));
+					context.form().setError("The code has expired.").createErrorPage(Response.Status.BAD_REQUEST));
 			} else {
 				// valid
 				context.success();
@@ -87,7 +89,7 @@ public class SmsAuthenticator implements Authenticator {
 			if (execution.isRequired()) {
 				context.failureChallenge(AuthenticationFlowError.INVALID_CREDENTIALS,
 					context.form().setAttribute("realm", context.getRealm())
-						.setError("smsAuthCodeInvalid").createForm(TPL_CODE));
+						.setError("Invalid code entered, please enter it again.").createForm(TPL_CODE));
 			} else if (execution.isConditional() || execution.isAlternative()) {
 				context.attempted();
 			}

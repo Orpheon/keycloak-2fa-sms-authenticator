@@ -18,17 +18,17 @@ public class SmsAuthenticatorFactory implements AuthenticatorFactory {
 
 	@Override
 	public String getId() {
-		return "sms-authenticator";
+		return "email-authenticator";
 	}
 
 	@Override
 	public String getDisplayType() {
-		return "SMS Authentication";
+		return "Email Authentication";
 	}
 
 	@Override
 	public String getHelpText() {
-		return "Validates an OTP sent via SMS to the users mobile phone.";
+		return "Validates an OTP sent via email to the users mobile phone.";
 	}
 
 	@Override

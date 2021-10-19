@@ -6,10 +6,9 @@ import java.util.Map;
 import java.util.Properties;
 
 public class EmailService {
-
-	static private Properties properties;
-	static private String username;
-	static private String password;
+	private Properties properties = new Properties();
+	private String username;
+	private String password;
 
 	EmailService(Map<String, String> config) {
 		properties.put("mail.transport.protocol", "smtp");
