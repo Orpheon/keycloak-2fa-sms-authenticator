@@ -29,7 +29,7 @@ public class SmsAuthenticator implements Authenticator {
 		KeycloakSession session = context.getSession();
 		UserModel user = context.getUser();
 
-		String mobileNumber = user.getFirstAttribute("mobile_number");
+		String email = user.getFirstAttribute("email");
 		// mobileNumber of course has to be further validated on proper format, country code, ...
 
 		int length = Integer.parseInt(config.getConfig().get("length"));
@@ -43,10 +43,11 @@ public class SmsAuthenticator implements Authenticator {
 		try {
 			Theme theme = session.theme().getTheme(Theme.Type.LOGIN);
 			Locale locale = session.getContext().resolveLocale(user);
+			String smsAuthTitle = theme.getMessages(locale).getProperty("smsAuthTitle");
 			String smsAuthText = theme.getMessages(locale).getProperty("smsAuthText");
 			String smsText = String.format(smsAuthText, code, Math.floorDiv(ttl, 60));
 
-			SmsServiceFactory.get(config.getConfig()).send(mobileNumber, smsText);
+			SmsServiceFactory.get(config.getConfig()).send(email, smsAuthTitle, smsText);
 
 			context.challenge(context.form().setAttribute("realm", context.getRealm()).createForm(TPL_CODE));
 		} catch (Exception e) {

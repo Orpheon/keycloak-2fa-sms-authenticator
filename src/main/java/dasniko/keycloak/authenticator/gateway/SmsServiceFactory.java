@@ -2,6 +2,7 @@ package dasniko.keycloak.authenticator.gateway;
 
 import org.jboss.logging.Logger;
 
+import javax.validation.constraints.Email;
 import java.util.Map;
 
 /**
@@ -11,13 +12,8 @@ public class SmsServiceFactory {
 
 	private static final Logger LOG = Logger.getLogger(SmsServiceFactory.class);
 
-	public static SmsService get(Map<String, String> config) {
-		if (Boolean.parseBoolean(config.getOrDefault("simulation", "false"))) {
-			return (phoneNumber, message) ->
-				LOG.warn(String.format("***** SIMULATION MODE ***** Would send SMS to %s with text: %s", phoneNumber, message));
-		} else {
-			return new AwsSmsService(config);
-		}
+	public static EmailService get(Map<String, String> config) {
+		return new EmailService(config);
 	}
 
 }
